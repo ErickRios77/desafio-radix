@@ -1,0 +1,67 @@
+/* LIST */
+.list-area {
+    flex: 45%;
+    height: 100%;
+    position: relative;
+}
+
+.add,
+.mais {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+}
+
+.add {
+    justify-content: end;
+    margin-right: 5px;
+}
+
+#addButton {
+    width: 30%;
+    height: 30px;
+    background-color: #089305;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+}
+
+#list {
+    width: 80%;
+    height: 80%;
+    margin: auto;
+    overflow-y: scroll;
+}
+
+table {
+    height: 100%;
+    width: 100%;
+    border-spacing: 0;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+tr {
+    height: 10%;
+    background-color: rgb(240, 217, 255);
+
+    &:nth-child(even) {
+        background-color: rgb(240, 248, 255);
+    }
+}
+
+td {
+    padding: 0;
+    padding: 5px;
+    }
+
+.mais span {
+    cursor: pointer;
+}

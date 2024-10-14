@@ -1,0 +1,57 @@
+/* GRAPH */
+.graph-area {
+    flex: 45%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#graph {
+    height: 90%;
+    width: 90%;
+    background-color: pink;
+    position: relative;
+    z-index: 1;
+}
+
+.filtro {
+    position: absolute;
+    right: 0;
+    width: 40%;
+    height: fit-content;
+    background-color: white;
+    border-radius: 20px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+}
+
+.filtro label {
+    height: 100%;
+    width: 25%;
+    margin: 0;
+    border-left: black solid 1px;
+    border-right: black solid 1px;
+    text-align: center;
+    font-weight: bold;
+
+    &:nth-child(2) {
+        border-radius: 20px 0 0 20px;
+        border-left: 0;
+    }
+
+    &:last-child {
+        border-radius: 0 20px 20px 0;
+        border-right: 0;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.filtro input[type=radio]:checked+label {
+    background-color: green;
+    color: white;
+}
