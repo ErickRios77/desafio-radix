@@ -1,0 +1,13 @@
+/* History */
+.history.list-area{
+    height: 90%;
+}
+
+.history table{
+    max-height: 80%;
+    height: auto;
+}
+
+.history tr{
+    height: 40px;
+}

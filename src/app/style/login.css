@@ -1,0 +1,49 @@
+/* Login */
+.loginArea{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.loginFormArea{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: blue;
+    height: 50vh;
+    width: 50vw;
+    flex-direction: column;
+}
+
+.loginFormArea form{
+    width: 50%;
+}
+
+.loginFormArea div{
+    display: flex;
+    gap: 10%;
+    width: 100%;
+    flex-direction: column;
+}
+
+.loginInput{
+    height: 28px;
+}
+
+div:has(#userPassword){
+    position: relative;
+}
+
+#showHidePasswordCk{
+    display: none;
+}
+
+#showHidePassword{
+    position: absolute;
+    top: 25%;
+    right: 2.5%;
+    margin: 0;
+    width: 20px;
+}

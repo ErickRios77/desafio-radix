@@ -35,11 +35,21 @@
     text-decoration: none;
     color: black;
     padding-left: 10px;
+    margin-bottom: 5%;
 
     &:hover {
         filter: opacity(50%);
         cursor: pointer;
         background-color: rgb(59, 114, 116);
         border-radius: 10px;
+    }
+}
+
+.active {
+    background-color: rgb(110, 214, 218);
+    border-radius: 10px;
+
+    &:hover{
+        background-color: rgb(110, 214, 218, 0.9);
     }
 }

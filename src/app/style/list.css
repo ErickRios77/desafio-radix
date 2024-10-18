@@ -51,6 +51,7 @@ table {
 tr {
     height: 10%;
     background-color: rgb(240, 217, 255);
+    text-align: center;
 
     &:nth-child(even) {
         background-color: rgb(240, 248, 255);
@@ -62,6 +63,11 @@ td {
     padding: 5px;
     }
 
-.mais span {
-    cursor: pointer;
+.mais {
+    text-decoration: none;
+    color: black;
+
+    &:hover{
+        font-weight: bold;
+    }
 }
