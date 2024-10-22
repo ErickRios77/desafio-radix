@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 
 import { useQuery, gql } from "@apollo/client";
 import client from "../apolloClient";
@@ -23,19 +24,39 @@ export default function History({onOpenModal}){
         return date.toLocaleString();
     };
 
-    const { loading, error, data, fetchMore } = useQuery(leituras, { variables:{offset:0,limit:10}, client});
+    const [offset, setOffset] = useState(0);
 
-    if (loading) { return <p>Buscando dados</p> }
+    const { loading, error, data, fetchMore } = useQuery(leituras, { variables:{offset:offset,limit:10}, client});
+
+    if (loading) { return (<div style={{position:'fixed',top:'50%',left:'45%'}}>Buscando dados</div>) }
     if (error) { return <p>Erro na busca dos dados: {error.message}</p> }
 
     const nextPage = () => {
         fetchMore({ 
-            variables: { offset: data.leituras.length },
+            variables: { offset: offset+10 },
+            updateQuery:(prev, {fetchMoreResult})=>{
+                if(!fetchMoreResult||fetchMoreResult.leituras.length===0){
+                    return prev;
+                }
+                setOffset(offset + 10);
+            }
         });
     }
 
-    // Why is it that every internet tutorial only teaches how to create infinite scroll pagination?
-    // Will eventually apply PROPER pagination here
+    const previousPage = () => {
+        if(offset===0)return;
+        fetchMore({
+            variables: { offset: Math.max(0, offset - 10) },
+            updateQuery: (prev, { fetchMoreResult }) => {
+                if (!fetchMoreResult || fetchMoreResult.leituras.length === 0) {
+                    return prev;
+                }
+                setOffset(offset - 10);
+            }
+        });
+    }
+
+    // A lot better now
 
     return (
         <div className="list-area history">
@@ -61,7 +82,8 @@ export default function History({onOpenModal}){
                         ))}
                     </tbody>
                 </table>
-                <button onClick={nextPage}>Próxima página</button>
+                <button onClick={previousPage} disabled={offset===0}>Página anterior</button>
+                <button onClick={nextPage} disabled={data.leituras.length<10}>Página seguinte</button>
             </div>
         </div>
     )
