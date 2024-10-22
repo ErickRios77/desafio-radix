@@ -21,6 +21,16 @@ const typeDefs = gql`
         leiturasFiltroData(intervalo:Int!) : [Leitura]
         leiturasRecentes:[Leitura]
     }
+
+    input dadosInsert{
+        equipmentID:String!,
+        dataLeitura:DateTime!,
+        valor:Float!
+    }
+
+    type Mutation{
+        insertLeituras(leituras:[dadosInsert]!):[Leitura]
+    }
 `;
 
 const resolvers = {
@@ -46,7 +56,7 @@ const resolvers = {
         },
         leiturasFiltroData: async (_,{intervalo}) => {
             try {
-                const [rows] = await connection.query('SELECT * FROM leitura WHERE DATE(dataLeitura) >= (CURDATE()-INTERVAL ? DAY) ORDER BY dataLeitura', [intervalo])
+                const [rows] = await connection.query('SELECT * FROM leitura WHERE DATE(dataLeitura) >= (CURDATE()-INTERVAL ? DAY) ORDER BY dataLeitura DESC', [intervalo])
                 return rows;
             } catch (error) {
                 console.error('Erro buscando leitura dentro da data especificada:', error);
@@ -63,6 +73,29 @@ const resolvers = {
             }
         }
     },
+    Mutation: {
+        insertLeituras: async (_,{leituras}) => {
+            const resultados = [];
+            try {
+                for(const leitura of leituras){
+                    const [resposta] = await connection.query('INSERT INTO leitura (equipmentID,dataLeitura,valor) VALUES (?,?,?)', [leitura.equipmentID, leitura.dataLeitura, leitura.valor]);
+
+                    resultados.push({
+                            id: resposta.insertId,
+                            equipmentID: leitura.equipmentID,
+                            dataLeitura: leitura.dataLeitura,
+                            valor: leitura.valor
+                    })
+                }
+                
+                
+                return resultados;
+            } catch(error){
+                console.error('Erro na inserção de dados:', error);
+                throw new Error('Falhou em inserir os dados');
+            }
+        }
+    }
 };
 
 const server = new ApolloServer({

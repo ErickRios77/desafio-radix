@@ -1,7 +1,9 @@
 "use client"
 
+import dynamic from 'next/dynamic';
+
 import Kpis from "./Kpis";
-import Graph from "./Graph";
+const Graph = dynamic(() => import('./Graph'), { ssr: false });
 import List from "./List";
 import ModalCSV from "./ModalCSV";
 

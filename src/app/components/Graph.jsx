@@ -1,6 +1,6 @@
 "use client"
 
-import React, { startTransition, useState, Suspense } from "react";
+import React, { startTransition, useState, Suspense, useEffect } from "react";
 
 import { gql, useSuspenseQuery } from "@apollo/client";
 import client from "../apolloClient";
@@ -34,6 +34,16 @@ export default function Graph(){
     };
 
     const { data } = useSuspenseQuery(leiturasFiltradas, { variables:{filtro}, client });
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            client.refetchQueries({
+                include: [leiturasFiltradas],
+            });
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [filtro]);
 
     return (
         <div className="graph-area">

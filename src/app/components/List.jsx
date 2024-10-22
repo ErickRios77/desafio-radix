@@ -23,7 +23,7 @@ export default function List({onOpenModal}) {
         return date.toLocaleString();
     };
 
-    const {loading, error, data} = useQuery(leiturasRecentes, {client});
+    const {loading, error, data} = useQuery(leiturasRecentes, {client, pollInterval:5000});
 
     if(loading){return <p>Buscando dados</p>}
     if(error){return <p>Erro na busca dos dados: {error.message}</p>}
