@@ -15,11 +15,19 @@ const typeDefs = gql`
         valor: Float
     }
 
+    type Kpi{
+        media1d: Float
+        media2d: Float
+        media7d: Float
+        media30d: Float
+    }
+
     type Query{
         leituras(offset:Int!,limit:Int!):[Leitura]
         leitura(id:Int!): Leitura
         leiturasFiltroData(intervalo:Int!) : [Leitura]
         leiturasRecentes:[Leitura]
+        kpisMedia: Kpi
     }
 
     input dadosInsert{
@@ -70,6 +78,22 @@ const resolvers = {
             } catch (error) {
                 console.error('Erro em buscar as leituras:', error);
                 throw new Error('Falhou em buscar as leituras');
+            }
+        },
+        kpisMedia: async () => {
+            try{
+                const [rows] = await connection.query(`
+                    SELECT 
+                        ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 1 DAY THEN valor END),2) AS media1d,
+                        ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 2 DAY THEN valor END),2) AS media2d,
+                        ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 7 DAY THEN valor END),2) AS media7d,
+                        ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 30 DAY THEN valor END),2) AS media30d
+                    FROM leitura;    
+                `)
+                return rows[0];
+            } catch (error) {
+                console.error('Erro em buscar as médias:', error);
+                throw new Error('Falhou em buscar as médias');
             }
         }
     },
