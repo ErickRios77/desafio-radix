@@ -8,9 +8,22 @@ import { DateTimeResolver } from 'graphql-scalars';
 const typeDefs = gql`
     scalar DateTime
 
+    type Usuario{
+        idUsuario: Int!
+        nome: String!
+        senha: String!
+        sensores: [Sensor!]!
+    }
+
+    type Sensor{
+        equipmentID: String!
+        responsavel: Usuario!
+        leituras: [Leitura!]!
+    }
+    
     type Leitura{
-        id: Int
-        equipmentID: String
+        id: Int!
+        sensor: Sensor! 
         dataLeitura: DateTime
         valor: Float
     }
@@ -23,6 +36,12 @@ const typeDefs = gql`
     }
 
     type Query{
+        usuarios:[Usuario!]!
+        usuario(idUsuario:Int!):Usuario
+
+        sensores:[Sensor!]!
+        sensor(equipmentID: String!):Sensor
+
         leituras(offset:Int!,limit:Int!):[Leitura]
         leitura(id:Int!): Leitura
         leiturasFiltroData(intervalo:Int!) : [Leitura]
@@ -97,22 +116,34 @@ const resolvers = {
             }
         }
     },
+    Leitura: {
+        sensor: async (parent) => {
+            try {
+                const [rows] = await connection.query('SELECT * FROM sensor WHERE equipmentID = ?', [parent.equipmentID]);
+                return rows[0];
+            } catch (error){
+                console.error(`Erro ao buscar sensor para equipmentID ${parent.equipmentID}:`, error);
+                throw new Error(`Falhou em buscar o sensor para equipmentID ${parent.equipmentID}`);
+            }
+        }
+    },
     Mutation: {
         insertLeituras: async (_,{leituras}) => {
             const resultados = [];
             try {
                 for(const leitura of leituras){
                     const [resposta] = await connection.query('INSERT INTO leitura (equipmentID,dataLeitura,valor) VALUES (?,?,?)', [leitura.equipmentID, leitura.dataLeitura, leitura.valor]);
+                    const [sensor] = await connection.query('SELECT * FROM sensor WHERE equipmentID = ?', [leitura.equipmentID]);
 
                     resultados.push({
-                            id: resposta.insertId,
-                            equipmentID: leitura.equipmentID,
-                            dataLeitura: leitura.dataLeitura,
-                            valor: leitura.valor
+                        id: resposta.insertId,
+                        sensor: sensor[0],  // Add the resolved sensor object here
+                        dataLeitura: leitura.dataLeitura,
+                        valor: leitura.valor
                     })
                 }
-                
-                
+
+
                 return resultados;
             } catch(error){
                 console.error('Erro na inserção de dados:', error);
@@ -130,5 +161,9 @@ const server = new ApolloServer({
 const handler = startServerAndCreateNextHandler(server);
 
 export async function POST(req) {
+    return handler(req);
+}
+
+export async function GET(req) {
     return handler(req);
 }

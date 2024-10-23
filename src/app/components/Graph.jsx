@@ -10,7 +10,9 @@ import '@/app/style/graph.css';
 const leiturasFiltradas = gql`
     query getFiltered($filtro:Int!){
         leiturasFiltroData(intervalo:$filtro){
-            equipmentID
+            sensor{
+                equipmentID
+            }
             dataLeitura
             valor
         }
@@ -73,7 +75,7 @@ export default function Graph(){
                             <tbody>
                                 {data.leiturasFiltroData.map((leitura, index) => (
                                     <tr key={index}>
-                                        <td>{leitura.equipmentID}</td>
+                                        <td>{leitura.sensor.equipmentID}</td>
                                         <td>{leitura.valor}</td>
                                         <td>{formatDate(leitura.dataLeitura)}</td>
                                     </tr>

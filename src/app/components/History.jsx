@@ -10,7 +10,9 @@ import '@/app/style/history.css';
 const leituras = gql`
     query getReadings($offset: Int!, $limit: Int!){
         leituras(offset: $offset, limit: $limit){
-            equipmentID
+            sensor{
+                equipmentID
+            }
             dataLeitura
             valor
         }
@@ -26,7 +28,7 @@ export default function History({onOpenModal}){
 
     const [offset, setOffset] = useState(0);
 
-    const { loading, error, data, fetchMore } = useQuery(leituras, { variables:{offset:offset,limit:10}, client});
+    const { loading, error, data, fetchMore } = useQuery(leituras, { variables:{offset:offset,limit:10}, client, pollInterval: 5000 });
 
     if (loading) { return (<div style={{position:'fixed',top:'50%',left:'45%'}}>Buscando dados</div>) }
     if (error) { return <p>Erro na busca dos dados: {error.message}</p> }
@@ -75,7 +77,7 @@ export default function History({onOpenModal}){
                     <tbody>
                         {data.leituras.map((leitura, index) => (
                             <tr key={index}>
-                                <td>{leitura.equipmentID}</td>
+                                <td>{leitura.sensor.equipmentID}</td>
                                 <td>{leitura.valor}</td>
                                 <td>{formatDate(leitura.dataLeitura)}</td>
                             </tr>

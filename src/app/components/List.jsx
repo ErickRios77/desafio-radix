@@ -9,7 +9,9 @@ import Link from "next/link";
 const leiturasRecentes = gql`
     query getRecent{
         leiturasRecentes{
-            equipmentID
+            sensor{
+                equipmentID
+            }
             dataLeitura
             valor
         }
@@ -45,7 +47,7 @@ export default function List({onOpenModal}) {
                     <tbody>
                         {data.leiturasRecentes.map((leitura, index) => (
                             <tr key={index}>
-                                <td>{leitura.equipmentID}</td>
+                                <td>{leitura.sensor.equipmentID}</td>
                                 <td>{leitura.valor}</td>
                                 <td>{formatDate(leitura.dataLeitura)}</td>
                             </tr>
