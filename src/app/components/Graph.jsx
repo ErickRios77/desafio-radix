@@ -5,11 +5,14 @@ import React, { startTransition, useState, Suspense, useEffect } from "react";
 import { gql, useSuspenseQuery } from "@apollo/client";
 import client from "../apolloClient";
 
+import { Chart } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
+
 import '@/app/style/graph.css';
 
 const leiturasFiltradas = gql`
-    query getFiltered($filtro:Int!){
-        leiturasFiltroData(intervalo:$filtro){
+    query getFiltered($filtro:Int!, $sensor: String!){
+        leiturasFiltroData(intervalo:$filtro, sensor:$sensor){
             sensor{
                 equipmentID
             }
@@ -19,7 +22,7 @@ const leiturasFiltradas = gql`
     }
 `;
 
-export default function Graph(){
+export default function Graph({ sensor }){
 
     const [filtro, setFiltro] = useState(1);
 
@@ -35,7 +38,25 @@ export default function Graph(){
         return date.toLocaleString();
     };
 
-    const { data } = useSuspenseQuery(leiturasFiltradas, { variables:{filtro}, client });
+    const dadosGrafico = {
+        labels: [],
+        datasets: [
+            {
+                label: "",
+                data: [],
+                fill: true,
+                backgroundColor: "rgba(75,192,192,0.2)",
+                borderColor: "rgba(75,192,192,1)"
+            },
+        ]
+    };
+
+    const { data } = useSuspenseQuery(leiturasFiltradas, { variables: { filtro, sensor }, client });
+    data.leiturasFiltroData.forEach(leitura => {
+        dadosGrafico.labels.push(formatDate(leitura.dataLeitura));
+        dadosGrafico.datasets[0].label = leitura.sensor.equipmentID;
+        dadosGrafico.datasets[0].data.push(leitura.valor)
+    });
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -50,6 +71,7 @@ export default function Graph(){
     return (
         <div className="graph-area">
             <div id="graph">
+                <span className="legenda">Média de leituras</span>
                 <div className="filtro">
                     <input type="radio" name="btn-filtro" id="days1" value={1} className="btn" onChange={handleValorFiltro} defaultChecked/>
                     <label htmlFor="days1">1d</label>
@@ -61,28 +83,7 @@ export default function Graph(){
                     <label htmlFor="days30">30d</label>
                 </div>
                 <Suspense fallback={<div>Buscando dados...</div>}>
-                    {/* Will change to graph component later */}
-                    {/* List is being used only as visual representation for data filtering during tests */}
-                    <div id="list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>sensor</th>
-                                    <th>valor</th>
-                                    <th>data</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {data.leiturasFiltroData.map((leitura, index) => (
-                                    <tr key={index}>
-                                        <td>{leitura.sensor.equipmentID}</td>
-                                        <td>{leitura.valor}</td>
-                                        <td>{formatDate(leitura.dataLeitura)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <Line data={dadosGrafico}/>
                 </Suspense>
             </div>
         </div>

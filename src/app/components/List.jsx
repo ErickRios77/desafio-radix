@@ -32,6 +32,7 @@ export default function List({onOpenModal}) {
 
     return (
         <div className="list-area">
+            <span className="legenda">Últimas leituras</span>
             <div className="add">
                 <span id="addButton" onClick={onOpenModal}>Preencher lacuna</span>
             </div>

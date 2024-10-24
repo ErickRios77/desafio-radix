@@ -8,16 +8,21 @@
 }
 
 #graph {
-    height: 90%;
-    width: 90%;
-    background-color: pink;
+    height: 95%;
+    width: 95%;
+    background-color: #F3F3F4;
     position: relative;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
 }
 
 .filtro {
     position: absolute;
-    right: 0;
+    right: 10px;
+    top: 10px;
     width: 40%;
     height: fit-content;
     background-color: white;

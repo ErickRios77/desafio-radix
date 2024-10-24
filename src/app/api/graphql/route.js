@@ -44,9 +44,9 @@ const typeDefs = gql`
 
         leituras(offset:Int!,limit:Int!):[Leitura]
         leitura(id:Int!): Leitura
-        leiturasFiltroData(intervalo:Int!) : [Leitura]
+        leiturasFiltroData(intervalo:Int!, sensor:String!) : [Leitura]
         leiturasRecentes:[Leitura]
-        kpisMedia: Kpi
+        kpisMedia(sensor:String!): Kpi
     }
 
     input dadosInsert{
@@ -63,6 +63,15 @@ const typeDefs = gql`
 const resolvers = {
     DateTime: DateTimeResolver,
     Query: {
+        sensores: async () => {
+            try{
+                const [rows] = await connection.query('SELECT * FROM sensor');
+                return rows;
+            } catch (error){
+                console.error('Erro em buscar os sensores:', error);
+                throw new Error('Falhou em buscar os sensores');
+            }
+        },
         leituras: async (_,{limit, offset}) => {
             try{
                 const [rows] = await connection.query('SELECT * FROM leitura ORDER BY dataLeitura DESC LIMIT ? OFFSET ?', [limit, offset]);
@@ -81,9 +90,9 @@ const resolvers = {
                 throw new Error(`Falhou em buscar leitura com ID ${id}`);
             }
         },
-        leiturasFiltroData: async (_,{intervalo}) => {
+        leiturasFiltroData: async (_,{sensor,intervalo}) => {
             try {
-                const [rows] = await connection.query('SELECT * FROM leitura WHERE DATE(dataLeitura) >= (CURDATE()-INTERVAL ? DAY) ORDER BY dataLeitura DESC', [intervalo])
+                const [rows] = await connection.query('SELECT * FROM leitura WHERE equipmentID = ? AND DATE(dataLeitura) >= (CURDATE()-INTERVAL ? DAY) ORDER BY dataLeitura DESC', [sensor, intervalo])
                 return rows;
             } catch (error) {
                 console.error('Erro buscando leitura dentro da data especificada:', error);
@@ -99,7 +108,7 @@ const resolvers = {
                 throw new Error('Falhou em buscar as leituras');
             }
         },
-        kpisMedia: async () => {
+        kpisMedia: async (_, {sensor}) => {
             try{
                 const [rows] = await connection.query(`
                     SELECT 
@@ -107,8 +116,8 @@ const resolvers = {
                         ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 2 DAY THEN valor END),2) AS media2d,
                         ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 7 DAY THEN valor END),2) AS media7d,
                         ROUND(AVG(CASE WHEN dataLeitura >= CURDATE() - INTERVAL 30 DAY THEN valor END),2) AS media30d
-                    FROM leitura;    
-                `)
+                    FROM leitura where equipmentID = ?;    
+                `, [sensor])
                 return rows[0];
             } catch (error) {
                 console.error('Erro em buscar as médias:', error);

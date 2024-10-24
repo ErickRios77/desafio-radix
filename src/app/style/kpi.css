@@ -16,4 +16,6 @@
     align-items: center;
     justify-content: center;
     font-size: 40px;
+    position: relative;
+    padding-top: 10px;
 }
