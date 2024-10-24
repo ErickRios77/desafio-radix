@@ -62,6 +62,7 @@ export default function History({onOpenModal}){
 
     return (
         <div className="list-area history">
+            <span className="legenda">Histórico de leituras</span>
             <div className="add">
                 <span id="addButton" onClick={onOpenModal}>Preencher lacuna</span>
             </div>

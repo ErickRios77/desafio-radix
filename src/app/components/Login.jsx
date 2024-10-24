@@ -20,13 +20,13 @@ export default function Login(){
             <div className="loginFormArea">
                 <form action="/dashboard">
                     <div>
-                        <label htmlFor="userEmail">Email: </label>
-                        <input type="email" placeholder="user@email.com" id="userEmail" className="loginInput" />
+                        <label htmlFor="userEmail">Nome de usuário: </label>
+                        <input type="text" placeholder="Erick" id="userEmail" className="loginInput" required/>
                     </div>
                     <div>
                         <label htmlFor="userPassword">Senha: </label>
                         <div>
-                            <input type={viewPassword ? "text" : "password"} id="userPassword" className="loginInput" />
+                            <input type={viewPassword ? "text" : "password"} placeholder="*******" id="userPassword" className="loginInput" required/>
                             <FontAwesomeIcon icon={viewPassword ? faEyeSlash : faEye} id="showHidePassword" onClick={handleViewPassword}/>
                         </div>
                     </div>
